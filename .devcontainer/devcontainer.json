@@ -27,11 +27,13 @@
     "dbaeumer.vscode-eslint",
     "mtxr.sqltools",
     "mtxr.sqltools-driver-pg",
-    "esbenp.prettier-vscode"
-  ]
+    "esbenp.prettier-vscode",
+    "tabnine.tabnine-vscode",
+    "visualstudioexptteam.vscodeintellicode"
+  ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // "forwardPorts": [3000, 5432],
+  "forwardPorts": [3000, 5432, 5555]
 
   // Use 'postCreateCommand' to run commands after the container is created.
   // "postCreateCommand": "yarn install",

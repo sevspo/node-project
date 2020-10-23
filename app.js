@@ -4,6 +4,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const hostname = "127.0.0.1";
 
+const db = require("./util/database");
+
 const errorController = require("./controllers/error");
 
 const app = express();
@@ -13,6 +15,14 @@ app.set("views", "views");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+
+db.query("SELECT * FROM products")
+  .then((val) => {
+    console.log(val);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
