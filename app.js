@@ -3,8 +3,9 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const hostname = "127.0.0.1";
+const port = 3000;
 
-const db = require("./util/database");
+const sqlizeInstance = require("./util/database");
 
 const errorController = require("./controllers/error");
 
@@ -24,4 +25,19 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-app.listen(3000, hostname);
+// this will initialize and create a db table with the defined models if it does not exist.
+sqlizeInstance
+  .sync()
+  .then((result) => {
+    // console.log(result);
+    listen();
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+function listen() {
+  app.listen(port, hostname, () => {
+    console.log(`Server listening on http://${hostname}:${port}`);
+  });
+}

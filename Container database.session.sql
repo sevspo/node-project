@@ -19,3 +19,5 @@ INSERT INTO products (id, title, price, description, imageurl)
 
 
 SELECT * FROM products
+
+DROP TABLE products
