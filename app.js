@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const hostname = "127.0.0.1";
 const port = 3000;
 
-const sqlizeInstance = require("./util/database");
+const db = require("./util/database");
 
 const errorController = require("./controllers/error");
 
@@ -26,8 +26,7 @@ app.use(shopRoutes);
 app.use(errorController.get404);
 
 // this will initialize and create a db table with the defined models if it does not exist.
-sqlizeInstance
-  .sync()
+db.sync()
   .then((result) => {
     // console.log(result);
     listen();

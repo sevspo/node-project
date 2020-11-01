@@ -1,8 +1,8 @@
 const { Sequelize, DataTypes } = require("sequelize");
 
-const sqlizeInstance = require("../util/database");
+const db = require("../util/database");
 
-const Product = sqlizeInstance.define("product", {
+const Product = db.define("product", {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
