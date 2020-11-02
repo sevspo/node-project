@@ -13,7 +13,11 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  Product.create({ title, imageUrl, price, description })
+  // Product.create({ title, imageUrl, price, description, userId: req.user.id })
+  // sequelize creates methods for us on the user, since we have a relation created
+  // and the id of the user is stored automatically.
+  req.user
+    .createProduct({ title, imageUrl, price, description })
     .then(() => {
       console.log("created product");
       res.redirect("/admin/products");
@@ -67,7 +71,8 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.findAll()
+  req.user
+    .getProducts()
     .then((products) => {
       res.render("admin/products", {
         prods: products,

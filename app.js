@@ -47,8 +47,9 @@ app.use(errorController.get404);
 
 // define relationships
 Product.belongsTo(User, { constraints: true, onDelete: "cascade" });
-// the inverse (optional)
-// User.hasMany(Product)
+// and the inverse (optional). this can be importand depending on the associationmethods you wand to
+// have available
+User.hasMany(Product);
 
 // this will initialize and create a db table with the defined models if it does not exist.
 // force true is for development only, it overwirtes existing tables! { force: true }
