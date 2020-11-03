@@ -20,8 +20,10 @@ const shopRoutes = require("./routes/shop");
 
 const Product = require("./models/product");
 const User = require("./models/user");
+const Cart = require("./models/cart");
+const CartItem = require("./models/cart-item");
 
-//config boy parser
+// config boy parser
 app.use(bodyParser.urlencoded({ extended: false }));
 // make the static folder for assets available
 app.use(express.static(path.join(__dirname, "public")));
@@ -45,11 +47,18 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-// define relationships
+// define relationships one user, many products
 Product.belongsTo(User, { constraints: true, onDelete: "cascade" });
 // and the inverse (optional). this can be importand depending on the associationmethods you wand to
 // have available
 User.hasMany(Product);
+
+// Cart relationships
+User.hasOne(Cart);
+Cart.belongsTo(User);
+// the many to many
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
 
 // this will initialize and create a db table with the defined models if it does not exist.
 // force true is for development only, it overwirtes existing tables! { force: true }
@@ -68,7 +77,10 @@ db.sync()
     return user;
   })
   .then((user) => {
-    //console.log(user);
+    // create a default cart
+    return user.createCart({});
+  })
+  .then(() => {
     listen();
   })
   .catch((err) => {
