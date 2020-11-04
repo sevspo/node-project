@@ -22,6 +22,8 @@ const Product = require("./models/product");
 const User = require("./models/user");
 const Cart = require("./models/cart");
 const CartItem = require("./models/cart-item");
+const Order = require("./models/order");
+const OrderItem = require("./models/order-item");
 
 // config boy parser
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -60,9 +62,16 @@ Cart.belongsTo(User);
 Cart.belongsToMany(Product, { through: CartItem });
 Product.belongsToMany(Cart, { through: CartItem });
 
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product, { through: OrderItem });
+Product.belongsToMany(Order, { through: OrderItem });
+
 // this will initialize and create a db table with the defined models if it does not exist.
 // force true is for development only, it overwirtes existing tables! { force: true }
-db.sync()
+db
+  //sync({ force: true })
+  .sync()
   .then((result) => {
     // create dummy user
     return User.findByPk(1);
