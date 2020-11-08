@@ -3,13 +3,12 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const hostname = "127.0.0.1";
-const port = 3000;
+const port = 3000; // I don't get why it does not recognize the import without .monogoconnect
 
 /* postgres */
 //const db = require("./util/database");
 
-/* mongo */
-const mongoConnect = require("./util/mongo");
+/* mongo */ const mongoConnect = require("./util/mongo").mongoConnect;
 
 const errorController = require("./controllers/error");
 
@@ -20,7 +19,7 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 const adminRoutes = require("./routes/admin");
-const shopRoutes = require("./routes/shop");
+//const shopRoutes = require("./routes/shop");
 
 /* postgres */
 /* const Product = require("./models/product");
@@ -48,10 +47,12 @@ app.use((req, res, next) => {
     .catch((err) => {
       console.error(err);
     }); */
+
+  next();
 });
 
 app.use("/admin", adminRoutes);
-app.use(shopRoutes);
+//app.use(shopRoutes);
 
 app.use(errorController.get404);
 
@@ -105,8 +106,7 @@ db
 
 /* mongo */
 // passing a callback to mongoConnect
-mongoConnect((client) => {
-  console.log(client);
+mongoConnect(() => {
   listen();
 });
 
