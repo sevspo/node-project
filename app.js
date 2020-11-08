@@ -5,7 +5,11 @@ const bodyParser = require("body-parser");
 const hostname = "127.0.0.1";
 const port = 3000;
 
-const db = require("./util/database");
+/* postgres */
+//const db = require("./util/database");
+
+/* mongo */
+const mongoConnect = require("./util/mongo");
 
 const errorController = require("./controllers/error");
 
@@ -18,21 +22,23 @@ app.set("views", "views");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
-const Product = require("./models/product");
+/* postgres */
+/* const Product = require("./models/product");
 const User = require("./models/user");
 const Cart = require("./models/cart");
 const CartItem = require("./models/cart-item");
 const Order = require("./models/order");
-const OrderItem = require("./models/order-item");
+const OrderItem = require("./models/order-item"); */
 
 // config boy parser
 app.use(bodyParser.urlencoded({ extended: false }));
 // make the static folder for assets available
 app.use(express.static(path.join(__dirname, "public")));
 
-// make user available. remember, app use just registers the function, so it will be available
+// make user available. remember, app use just registers the function, so it will be available mongo
 app.use((req, res, next) => {
-  User.findByPk(1)
+  /* postgres */
+  /*   User.findByPk(1)
     .then((user) => {
       // and here we are storing the user object, with sequelize methods etc.
       req.user = user;
@@ -41,7 +47,7 @@ app.use((req, res, next) => {
     })
     .catch((err) => {
       console.error(err);
-    });
+    }); */
 });
 
 app.use("/admin", adminRoutes);
@@ -49,7 +55,8 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-// define relationships one user, many products
+/* postgres */
+/* // define relationships one user, many products
 Product.belongsTo(User, { constraints: true, onDelete: "cascade" });
 // and the inverse (optional). this can be importand depending on the associationmethods you wand to
 // have available
@@ -94,7 +101,14 @@ db
   })
   .catch((err) => {
     console.log(err);
-  });
+  }); */
+
+/* mongo */
+// passing a callback to mongoConnect
+mongoConnect((client) => {
+  console.log(client);
+  listen();
+});
 
 function listen() {
   app.listen(port, hostname, () => {
