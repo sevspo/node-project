@@ -1,6 +1,6 @@
 // Update the VARIANT arg in docker-compose.yml to pick a Node.js version: 10, 12, 14
 {
-  "name": "Node.js & PostgreSQL",
+  "name": "Node-PostgreSQL-Mongo",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspace",
@@ -34,7 +34,7 @@
   ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [3000, 5432, 5555, 27017]
+  "forwardPorts": [3000, 5432, 5555]
 
   // Use 'postCreateCommand' to run commands after the container is created.
   // "postCreateCommand": "yarn install",
