@@ -21,6 +21,24 @@ class Product {
         console.log(error);
       });
   }
+
+  static fetchAll() {
+    const db = getDb();
+    // mongo find does not return a promise, but a handler.
+    // except if you use the toArray method. only use if you know there
+    // are not many products in the collection.
+    return db
+      .collection("products")
+      .find()
+      .toArray()
+      .then((products) => {
+        console.log(products);
+        return products;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 }
 
 /* postgres */

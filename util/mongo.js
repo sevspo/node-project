@@ -4,7 +4,7 @@ const MongoClient = mongodb.MongoClient;
 let _db;
 
 const mongoConnect = (callback) => {
-  MongoClient.connect("mongodb://mongo:27017")
+  MongoClient.connect("mongodb://root:mongo@mongo:27017")
     .then((client) => {
       console.log("connected");
       // here we define a nome for our collection, but why here?
