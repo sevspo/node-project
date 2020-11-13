@@ -29,6 +29,8 @@ const CartItem = require("./models/cart-item");
 const Order = require("./models/order");
 const OrderItem = require("./models/order-item"); */
 
+const User = require("./models/user");
+
 // config boy parser
 app.use(bodyParser.urlencoded({ extended: false }));
 // make the static folder for assets available
@@ -47,6 +49,15 @@ app.use((req, res, next) => {
     .catch((err) => {
       console.error(err);
     }); */
+
+  User.findById(1)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
   next();
 });
