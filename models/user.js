@@ -47,7 +47,7 @@ class User {
     const db = getDb();
     return (
       db
-        .colleciton("users")
+        .collection("users")
         .find({ _id: new mongodb.ObjectId(userId) })
         // find returns a cursor and we can call next on it to get the next user
         // you could also use findOne here

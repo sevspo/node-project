@@ -50,7 +50,7 @@ app.use((req, res, next) => {
       console.error(err);
     }); */
 
-  User.findById(1)
+  User.findById("5faf14bdcdf52203f1ef14d6")
     .then((user) => {
       req.user = user;
       next();
@@ -58,8 +58,6 @@ app.use((req, res, next) => {
     .catch((err) => {
       console.log(err);
     });
-
-  next();
 });
 
 app.use("/admin", adminRoutes);
