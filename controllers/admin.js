@@ -31,20 +31,6 @@ exports.postAddProduct = (req, res, next) => {
     .catch((error) => {
       console.log(error);
     });
-
-  /* postgres */
-  /*   Product.create({ title, imageUrl, price, description, userId: req.user.id })
-  sequelize creates methods for us on the user, since we have a relation created
-  and the id of the user is stored automatically.
-  req.user
-    .createProduct({ title, imageUrl, price, description })
-    .then(() => {
-      console.log("created product");
-      res.redirect("/admin/products");
-    })
-    .catch((err) => {
-      console.log(err);
-    }); */
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -92,8 +78,6 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  // req.user
-  //   .getProducts()
   Product.fetchAll()
     .then((products) => {
       res.render("admin/products", {
@@ -110,10 +94,7 @@ exports.getProducts = (req, res, next) => {
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   Product.deleteById(prodId)
-    /* postgres */
-    // .then((product) => {
-    //   return product.destroy();
-    // })
+
     .then(() => {
       //console.log("deleted");
       res.redirect("/admin/products");
