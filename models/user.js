@@ -44,6 +44,7 @@ class User {
       });
   }
 
+  // in monogo, the cart is now enbeded in the user, to create a connection
   addToCart(product) {
     const cartProductIndex = this.cart.items.findIndex((item) => {
       // we need type conversion because _id is not really a string?
@@ -105,6 +106,35 @@ class User {
         { _id: this._id },
         { $set: { cart: { items: updatedCartItems } } }
       );
+  }
+
+  addOrder() {
+    const db = getDb();
+    return this.getCart()
+      .then((products) => {
+        // we also need info about the user, so we again create duplicate data and embed the user
+        const order = {
+          items: products,
+          // here duplicate data is ok. Duplicate data can also act as a snapshot
+          user: {
+            _id: this._id,
+            name: this.name,
+          },
+        };
+        return db.collection("orders").insertOne(order);
+      })
+      .then((result) => {
+        this.cart = { items: [] };
+        return db
+          .collection("users")
+          .updateOne({ _id: this._id }, { $set: { cart: { items: [] } } });
+      });
+  }
+
+  getOrders() {
+    const db = getDb();
+    // here we define a path to a nested prperty
+    return db.collection("orders").find({ "user._id": this._id }).toArray();
   }
 
   static findById(userId) {

@@ -129,41 +129,43 @@ exports.postCartDeleteProduct = (req, res, next) => {
     });
 };
 
-// exports.getOrders = (req, res, next) => {
-//   res.render("shop/orders", {
-//     path: "/orders",
-//     pageTitle: "Your Orders",
-//   });
-// };
+exports.getOrders = (req, res, next) => {
+  res.render("shop/orders", {
+    path: "/orders",
+    pageTitle: "Your Orders",
+  });
+};
 
-// exports.getCheckout = (req, res, next) => {
-//   res.render("shop/checkout", {
-//     path: "/checkout",
-//     pageTitle: "Checkout",
-//   });
-// };
+exports.getCheckout = (req, res, next) => {
+  res.render("shop/checkout", {
+    path: "/checkout",
+    pageTitle: "Checkout",
+  });
+};
 
 exports.postOrder = (req, res, next) => {
-  let fetchedCart;
+  //let fetchedCart;
   req.user
-    .getCart()
-    .then((cart) => {
-      fetchedCart = cart;
-      return cart.getProducts();
-    })
-    .then((products) => {
-      return req.user.createOrder().then((order) => {
-        return order.addProducts(
-          products.map((product) => {
-            product.orderItem = { quantity: product.cartItem.quantity };
-            return product;
-          })
-        );
-      });
-    })
-    .then((result) => {
-      return fetchedCart.setProducts(null);
-    })
+    .addOrder()
+    /* postgres */
+    // .getCart()
+    // .then((cart) => {
+    //   fetchedCart = cart;
+    //   return cart.getProducts();
+    // })
+    // .then((products) => {
+    //   return req.user.createOrder().then((order) => {
+    //     return order.addProducts(
+    //       products.map((product) => {
+    //         product.orderItem = { quantity: product.cartItem.quantity };
+    //         return product;
+    //       })
+    //     );
+    //   });
+    // })
+    // .then((result) => {
+    //   return fetchedCart.setProducts(null);
+    // })
     .then((result) => {
       res.redirect("/orders");
     })
@@ -175,7 +177,8 @@ exports.postOrder = (req, res, next) => {
 exports.getOrders = (req, res, next) => {
   req.user
     // here the include syntax is important, because it gets us the products as well
-    .getOrders({ include: ["products"] })
+    //.getOrders({ include: ["products"] })
+    .getOrders()
     .then((orders) => {
       res.render("shop/orders", {
         path: "/orders",
