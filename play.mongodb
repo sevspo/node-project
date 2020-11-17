@@ -35,7 +35,4 @@ db.sales.aggregate(aggregation);
 use('shop')
 db.users.insertOne({ name: "severin", email: "severin@severin.com"})
 
-use('shop')
-db.orders.drop();
-db.products.drop();
-db.users.drop();
+
