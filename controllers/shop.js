@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const Product = require("../models/product");
 
 exports.getProducts = (req, res, next) => {
@@ -47,10 +48,6 @@ exports.getIndex = (req, res, next) => {
 exports.getCart = (req, res, next) => {
   req.user
     .getCart()
-    // .then((cart) => {
-    //   // console.log(cart);
-    //   return cart.getProducts();
-    // })
     .then((products) => {
       res.render("shop/cart", {
         path: "/cart",
@@ -103,7 +100,6 @@ exports.getCheckout = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-  //let fetchedCart;
   req.user
     .addOrder()
 
