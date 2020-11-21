@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // make user available. remember, app use just registers the function, so it will be available mongo
 app.use((req, res, next) => {
-  User.findById("5faf14bdcdf52203f1ef14d6")
+  User.findById("5fb961e01793bf1cf12aac97")
     .then((user) => {
       req.user = user;
       next();

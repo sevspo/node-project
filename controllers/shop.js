@@ -46,8 +46,11 @@ exports.getIndex = (req, res, next) => {
 // get cart associated with that user and return items? // not workin yet?
 exports.getCart = (req, res, next) => {
   req.user
-    .getCart()
-    .then((products) => {
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then((user) => {
+      const products = user.cart.items;
+      console.log(products);
       res.render("shop/cart", {
         path: "/cart",
         pageTitle: "Your Cart",
@@ -74,9 +77,9 @@ exports.postCart = (req, res, next) => {
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   req.user
-    .deleteItemFromCart(prodId)
-
+    .removeFromCart(prodId)
     .then((result) => {
+      console.log(result);
       res.redirect("/cart");
     })
     .catch((err) => {

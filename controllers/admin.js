@@ -14,7 +14,14 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const product = new Product({ title, imageUrl, price, description });
+  const product = new Product({
+    title,
+    imageUrl,
+    price,
+    description,
+    //we dont need to put user_id, moongose does it for us?
+    userId: req.user,
+  });
 
   product
     .save()
@@ -72,7 +79,11 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   Product.find()
+    // special mongoose methods for querying data
+    //.select("title price -_id")
+    //.populate("userId")
     .then((products) => {
+      console.log(products);
       res.render("admin/products", {
         prods: products,
         pageTitle: "Admin Products",
@@ -94,4 +105,3 @@ exports.postDeleteProduct = (req, res, next) => {
     })
     .catch((err) => console.error(err));
 };
-  
