@@ -18,7 +18,7 @@ app.set("views", "views");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
-// const User = require("./models/user");
+const User = require("./models/user");
 
 // config boy parser
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -26,16 +26,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // make user available. remember, app use just registers the function, so it will be available mongo
-// app.use((req, res, next) => {
-//   User.findById("5faf14bdcdf52203f1ef14d6")
-//     .then((user) => {
-//       req.user = new User(user.name, user.email, user.cart, user._id);
-//       next();
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
+app.use((req, res, next) => {
+  User.findById("5faf14bdcdf52203f1ef14d6")
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
@@ -49,6 +49,16 @@ mongoose
     dbName: "shop",
   })
   .then((result) => {
+    User.findOne().then((user) => {
+      if (!user) {
+        const user = new User({
+          name: "Severin",
+          email: "severin@gmail.com",
+          cart: { items: [] },
+        });
+        user.save();
+      }
+    });
     //console.log(result);
     listen();
   })
