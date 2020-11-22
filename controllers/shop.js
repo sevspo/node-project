@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 const Product = require("../models/product");
+const Order = require("../models/order");
 
 exports.getProducts = (req, res, next) => {
   //Product.findAll()
@@ -103,9 +104,29 @@ exports.getCheckout = (req, res, next) => {
 
 exports.postOrder = (req, res, next) => {
   req.user
-    .addOrder()
-
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then((user) => {
+      const products = user.cart.items.map((item) => {
+        return {
+          quantity: item.quantity,
+          productData: { ...item.productId._doc },
+        };
+      });
+      const order = new Order({
+        user: {
+          name: req.user.name,
+          // mongoose is smart enough to only embed the user id and not the full user?
+          userId: req.user,
+        },
+        products: products,
+      });
+      return order.save();
+    })
     .then((result) => {
+      req.user.clearCart();
+    })
+    .then(() => {
       res.redirect("/orders");
     })
     .catch((err) => {
@@ -114,9 +135,9 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  req.user
-    .getOrders()
+  Order.find({ "user.userId": req.user._id })
     .then((orders) => {
+      console.log(orders);
       res.render("shop/orders", {
         path: "/orders",
         pageTitle: "Your Orders",
