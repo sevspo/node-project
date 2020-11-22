@@ -88,13 +88,6 @@ exports.postCartDeleteProduct = (req, res, next) => {
     });
 };
 
-exports.getOrders = (req, res, next) => {
-  res.render("shop/orders", {
-    path: "/orders",
-    pageTitle: "Your Orders",
-  });
-};
-
 exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", {
     path: "/checkout",
