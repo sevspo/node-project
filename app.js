@@ -2,6 +2,8 @@
 const path = require("path");
 
 const mongoose = require("mongoose");
+const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -10,6 +12,18 @@ const port = 3000; // I don't get why it does not recognize the import without .
 const errorController = require("./controllers/error");
 
 const app = express();
+const store = new MongoDBStore({
+  uri: "mongodb://root:mongo@mongo:27017",
+  databaseName: "shop",
+  collection: "mySessions",
+  connectionOptions: {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  function(error) {
+    console.error(error);
+  },
+});
 
 // config templating engine
 app.set("view engine", "ejs");
@@ -20,6 +34,15 @@ const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 
 const User = require("./models/user");
+
+app.use(
+  session({
+    secret: "longstringpw",
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+  })
+);
 
 // config boy parser
 app.use(bodyParser.urlencoded({ extended: false }));
