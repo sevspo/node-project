@@ -49,7 +49,7 @@ exports.getIndex = (req, res, next) => {
 
 // get cart associated with that user and return items? // not workin yet?
 exports.getCart = (req, res, next) => {
-  req.session.user
+  req.user
     .populate("cart.items.productId")
     .execPopulate()
     .then((user) => {
@@ -71,7 +71,7 @@ exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
   Product.findById(prodId)
     .then((product) => {
-      return req.session.user.addToCart(product);
+      return req.user.addToCart(product);
     })
     .then((result) => {
       console.log(result);
@@ -81,7 +81,7 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  req.session.user
+  req.user
     .removeFromCart(prodId)
     .then((result) => {
       console.log(result);
@@ -101,7 +101,7 @@ exports.getCheckout = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-  req.session.user
+  req.user
     .populate("cart.items.productId")
     .execPopulate()
     .then((user) => {
@@ -113,16 +113,16 @@ exports.postOrder = (req, res, next) => {
       });
       const order = new Order({
         user: {
-          name: req.session.user.name,
+          name: req.user.name,
           // mongoose is smart enough to only embed the user id and not the full user?
-          userId: req.session.user,
+          userId: req.user,
         },
         products: products,
       });
       return order.save();
     })
     .then((result) => {
-      req.session.user.clearCart();
+      req.user.clearCart();
     })
     .then(() => {
       res.redirect("/orders");
@@ -133,7 +133,7 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  Order.find({ "user.userId": req.session.user._id })
+  Order.find({ "user.userId": req.user._id })
     .then((orders) => {
       console.log(orders);
       res.render("shop/orders", {

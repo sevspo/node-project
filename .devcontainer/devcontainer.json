@@ -27,9 +27,8 @@
     "dbaeumer.vscode-eslint",
     "mtxr.sqltools",
     "mtxr.sqltools-driver-pg",
-    "esbenp.prettier-vscode",
-    "tabnine.tabnine-vscode",
     "visualstudioexptteam.vscodeintellicode",
+    "esbenp.prettier-vscode",
     "mongodb.mongodb-vscode"
   ],
 

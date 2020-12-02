@@ -21,7 +21,7 @@ exports.postAddProduct = (req, res, next) => {
     price,
     description,
     //we dont need to put user_id, moongose does it for us?
-    userId: req.session.user,
+    userId: req.user,
   });
 
   product

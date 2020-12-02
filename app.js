@@ -44,6 +44,23 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  // check if session user is present
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
+    .then((user) => {
+      // create user for this request based on the session data
+      // because we need the functions on the mongoose user model.
+      req.user = user;
+      next();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
 // config boy parser
 app.use(bodyParser.urlencoded({ extended: false }));
 // make the static folder for assets available
