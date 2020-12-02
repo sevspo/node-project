@@ -1,10 +1,16 @@
 const User = require("../models/user");
 
 exports.getLogin = (req, res, next) => {
-  console.log(req.session);
   res.render("auth/login", {
     path: "/login",
     pageTitle: "Login",
+    isAuthenticated: req.session.isLoggedIn,
+  });
+};
+exports.getSignup = (req, res, next) => {
+  res.render("auth/signup", {
+    path: "/signup",
+    pageTitle: "Signup",
     isAuthenticated: req.session.isLoggedIn,
   });
 };
@@ -23,6 +29,8 @@ exports.postLogin = (req, res, next) => {
       console.log(err);
     });
 };
+
+exports.postSignup = (req, res, next) => {};
 
 exports.postLogout = (req, res, next) => {
   req.session
