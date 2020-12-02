@@ -52,16 +52,6 @@ app.use(express.static(path.join(__dirname, "public")));
 // make user available. remember, app use just registers the function, so it will be available mongo
 // this only works, because we work on that particular request and pass it on.
 // After a request is hadled and a response is set, the context of the request is lost.
-app.use((req, res, next) => {
-  User.findById("5fb961e01793bf1cf12aac97")
-    .then((user) => {
-      req.user = user;
-      next();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
 
 // this filters the request
 app.use("/admin", adminRoutes);
