@@ -113,7 +113,7 @@ exports.postOrder = (req, res, next) => {
       });
       const order = new Order({
         user: {
-          name: req.user.name,
+          email: req.user.email,
           // mongoose is smart enough to only embed the user id and not the full user?
           userId: req.user,
         },

@@ -4,14 +4,21 @@ const path = require("path");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
+const csrf = require("csurf");
 
 const express = require("express");
 const bodyParser = require("body-parser");
 const hostname = "127.0.0.1";
 const port = 3000; // I don't get why it does not recognize the import without .monogoconnec
 const errorController = require("./controllers/error");
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
+const User = require("./models/user");
 
 const app = express();
+
+// for session storing
 const store = new MongoDBStore({
   uri: "mongodb://root:mongo@mongo:27017",
   databaseName: "shop",
@@ -25,15 +32,12 @@ const store = new MongoDBStore({
   },
 });
 
+// init cross site forgery tokens
+const csrfProtection = csrf();
+
 // config templating engine
 app.set("view engine", "ejs");
 app.set("views", "views");
-
-const adminRoutes = require("./routes/admin");
-const shopRoutes = require("./routes/shop");
-const authRoutes = require("./routes/auth");
-
-const User = require("./models/user");
 
 app.use(
   session({
@@ -44,6 +48,9 @@ app.use(
   })
 );
 
+// make user available. remember, app uses just registers the function, so it will be available mongo
+// this only works, because we work on that particular request and pass it on.
+// After a request is hadled and a response is set, the context of the request is lost.
 app.use((req, res, next) => {
   // check if session user is present
   if (!req.session.user) {
@@ -61,14 +68,21 @@ app.use((req, res, next) => {
     });
 });
 
-// config boy parser
-app.use(bodyParser.urlencoded({ extended: false }));
+// config body parser
+app.use(bodyParser.urlencoded({ extended: true }));
+
 // make the static folder for assets available
 app.use(express.static(path.join(__dirname, "public")));
 
-// make user available. remember, app use just registers the function, so it will be available mongo
-// this only works, because we work on that particular request and pass it on.
-// After a request is hadled and a response is set, the context of the request is lost.
+//after session and body parser, this is very important!
+app.use(csrfProtection);
+
+// set variables to for each request
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 
 // this filters the request
 app.use("/admin", adminRoutes);
