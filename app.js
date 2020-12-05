@@ -9,7 +9,7 @@ const csrf = require("csurf");
 const express = require("express");
 const bodyParser = require("body-parser");
 const hostname = "127.0.0.1";
-const port = 3000; // I don't get why it does not recognize the import without .monogoconnec
+const port = process.env.PORT || 3000;
 const errorController = require("./controllers/error");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
@@ -21,7 +21,7 @@ const app = express();
 
 // for session storing
 const store = new MongoDBStore({
-  uri: "mongodb://root:mongo@mongo:27017",
+  uri: `${process.env.MONGO_CONNECTION}`,
   databaseName: "shop",
   collection: "mySessions",
   connectionOptions: {
@@ -95,7 +95,7 @@ app.use(authRoutes);
 app.use(errorController.get404);
 
 mongoose
-  .connect("mongodb://root:mongo@mongo:27017", {
+  .connect(`${process.env.MONGO_CONNECTION}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     dbName: "shop",

@@ -1,7 +1,19 @@
 /* eslint-disable no-unused-vars */
 const User = require("../models/user");
+const nodemailer = require("nodemailer");
+const sendGridTransport = require("nodemailer-sendgrid-transport");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.GRID_KEY);
 
 const bcrypt = require("bcryptjs");
+
+const transporter = nodemailer.createTransport(
+  sendGridTransport({
+    auth: {
+      api_key: process.env.GRID_KEY,
+    },
+  })
+);
 
 exports.getLogin = (req, res, next) => {
   let message = req.flash("error");
@@ -78,11 +90,19 @@ exports.postSignup = (req, res, next) => {
           return user.save();
         })
         .then((result) => {
-          console.log(result);
           res.redirect("/login");
+          return sgMail.send({
+            to: email,
+            from: "severin.spoerri@outlook.com",
+            subject: "success",
+            text: "This is the text",
+            html: "<h1>Well Done Sevi</h1>",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
         });
     })
-
     .catch((err) => {
       console.error(err);
     });
