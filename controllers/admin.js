@@ -64,26 +64,35 @@ exports.postEditProduct = (req, res, next) => {
   const updatedDesc = req.body.description;
   Product.findById(prodId)
     .then((product) => {
+      // ad a security check here
+      // TODO: check if this conversion is still necessary, and even the underscore _id syntax?
+      console.log(req.user.id);
+      console.log(req.user._id);
+      if (product.userId.toString() !== req.user._id.toString()) {
+        return res.redirect("/");
+      }
       product.title = updatedTitle;
       product.price = updatedPrice;
       product.imageUrl = updatedImageUrl;
       product.description = updatedDesc;
-      return product.save();
-    })
-    .then((result) => {
-      console.log("updated");
-      res.redirect("/admin/products");
+      // again an example were we have to nest the promise otherways we
+      // would make it into this even though we return in the check above
+      return product.save().then((result) => {
+        console.log("updated");
+        res.redirect("/admin/products");
+      });
+      // a catch will not be bubbled up
     })
     .catch((err) => console.error(err));
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
+  //what does this method return if the user is not defined? => null
+  //only show books of that user
+  Product.find({ userId: req.user._id })
     // special mongoose methods for querying data
-    //.select("title price -_id")
-    //.populate("userId")
     .then((products) => {
-      console.log(products);
+      //console.log(products);
       res.render("admin/products", {
         prods: products,
         pageTitle: "Admin Products",
@@ -97,8 +106,9 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findByIdAndRemove(prodId)
-
+  // Product.findByIdAndRemove(prodId)
+  // now other users cannot delete all books anymore
+  Product.deleteOne({ _id: prodId, userId: req.user.id })
     .then(() => {
       //console.log("deleted");
       res.redirect("/admin/products");
