@@ -15,6 +15,7 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 const User = require("./models/user");
+const flash = require("connect-flash");
 
 const app = express();
 
@@ -77,7 +78,9 @@ app.use(express.static(path.join(__dirname, "public")));
 //after session and body parser, this is very important!
 app.use(csrfProtection);
 
-// set variables to for each request
+app.use(flash());
+
+// set variables to for each request with this local thing
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
   res.locals.csrfToken = req.csrfToken();

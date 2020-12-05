@@ -109,6 +109,17 @@ form {
   border-radius: 3px;
 }
 
+.user-message {
+  text-align: center;
+  margin: auto;
+  width: 90%;
+  border: 1px dashed rgb(114, 150, 250);
+}
+
+.user-message.user-message--error {
+  color: rgb(145, 25, 25);
+}
+
 #side-menu-toggle {
   border: 1px solid white;
   font: inherit;
@@ -217,5 +228,9 @@ form {
 
   #side-menu-toggle {
     display: none;
+  }
+
+  .user-message {
+    width: 30rem;
   }
 }
