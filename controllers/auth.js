@@ -96,37 +96,29 @@ exports.postSignup = (req, res, next) => {
       errorMessage: errors.array()[0].msg,
     });
   }
-  User.findOne({ email })
-    .then((userDoc) => {
-      if (userDoc) {
-        return res.redirect("/signup");
-      }
-      return bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email,
-            password: hashedPassword,
-            cart: { items: [] },
-          });
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect("/login");
-          return sgMail.send({
-            to: email,
-            from: "severin.spoerri@outlook.com",
-            subject: "success",
-            text: "This is the text",
-            html: "<h1>Well Done Sevi</h1>",
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+  // checking  for existence of email in route check
+  bcrypt
+    .hash(password, 12)
+    .then((hashedPassword) => {
+      const user = new User({
+        email,
+        password: hashedPassword,
+        cart: { items: [] },
+      });
+      return user.save();
+    })
+    .then((result) => {
+      res.redirect("/login");
+      return sgMail.send({
+        to: email,
+        from: "severin.spoerri@outlook.com",
+        subject: "success",
+        text: "This is the text",
+        html: "<h1>Well Done Sevi</h1>",
+      });
     })
     .catch((err) => {
-      console.error(err);
+      console.log(err);
     });
 };
 

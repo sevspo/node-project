@@ -4,7 +4,9 @@ const authController = require("../controllers/auth");
 
 const router = express.Router();
 
-const { check } = require("express-validator/check");
+const { check, body } = require("express-validator/check");
+
+const User = require("../models/user");
 
 router.get("/login", authController.getLogin);
 
@@ -14,15 +16,31 @@ router.get("/signup", authController.getSignup);
 
 router.post(
   "/signup",
-  check("email")
-    .isEmail()
-    .withMessage("please sevi")
-    .custom((value, { req }) => {
-      if (value !== "sevi@sevi.com") {
-        throw new Error("Whant other email");
+  [
+    check("email")
+      .isEmail()
+      .withMessage("please sevi")
+      .custom((value, { req }) => {
+        // if (value !== "sevi@sevi.com") {
+        //   throw new Error("Whant other email");
+        // }
+        // return true;
+        User.findOne({ email: value }).then((userDoc) => {
+          if (userDoc) {
+            return Promise.reject("email already taken");
+          }
+        });
+      }),
+    body("password", "default error message for all validators")
+      .isLength({ min: 5 })
+      .isAlphanumeric(),
+    body("confirmPassword").custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error("Passwords do not match");
       }
       return true;
     }),
+  ],
   authController.postSignup
 );
 
