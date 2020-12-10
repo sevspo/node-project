@@ -12,7 +12,19 @@ router.post("/login", authController.postLogin);
 
 router.get("/signup", authController.getSignup);
 
-router.post("/signup", check("email").isEmail(), authController.postSignup);
+router.post(
+  "/signup",
+  check("email")
+    .isEmail()
+    .withMessage("please sevi")
+    .custom((value, { req }) => {
+      if (value !== "sevi@sevi.com") {
+        throw new Error("Whant other email");
+      }
+      return true;
+    }),
+  authController.postSignup
+);
 
 router.post("/logout", authController.postLogout);
 
