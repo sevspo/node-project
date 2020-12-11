@@ -112,8 +112,11 @@ form {
 .user-message {
   text-align: center;
   margin: auto;
+  border-radius: 5px;
   width: 90%;
-  border: 1px dashed rgb(114, 150, 250);
+  border: 2px solid red;
+  background: salmon;
+  padding: 5px;
 }
 
 .user-message.user-message--error {

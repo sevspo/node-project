@@ -28,6 +28,7 @@
     "mtxr.sqltools",
     "mtxr.sqltools-driver-pg",
     "visualstudioexptteam.vscodeintellicode",
+    "tabnine.tabnine-vscode",
     "esbenp.prettier-vscode",
     "mongodb.mongodb-vscode"
   ],

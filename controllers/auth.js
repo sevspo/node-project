@@ -32,6 +32,8 @@ exports.getLogin = (req, res, next) => {
     pageTitle: "Login",
     isAuthenticated: false,
     errorMessage: message,
+    oldInput: { email: "", password: "" },
+    validationErrors: [],
   });
 };
 
@@ -47,17 +49,27 @@ exports.getSignup = (req, res, next) => {
     pageTitle: "Signup",
     isAuthenticated: false,
     errorMessage: message,
+    oldInput: { email: "", password: "", confirmPassword: "" },
+    validationErrors: [],
   });
 };
 
 exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+  const errors = validationResult(req);
+
   User.findOne({ email })
     .then((user) => {
       if (!user) {
-        req.flash("error", "invalid email.");
-        return res.redirect("/login");
+        return res.status(422).render("auth/login", {
+          path: "/login",
+          pageTitle: "login",
+          isAuthenticated: false,
+          errorMessage: errors.array()[0].msg,
+          oldInput: { email, password },
+          validationErrors: errors.array(),
+        });
       }
       bcrypt
         .compare(password, user.password)
@@ -70,7 +82,14 @@ exports.postLogin = (req, res, next) => {
               res.redirect("/");
             });
           }
-          res.redirect("/login");
+          return res.status(422).render("auth/login", {
+            path: "/login",
+            pageTitle: "login",
+            isAuthenticated: false,
+            errorMessage: errors.array()[0].msg,
+            oldInput: { email, password },
+            validationErrors: errors.array(),
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -94,6 +113,8 @@ exports.postSignup = (req, res, next) => {
       pageTitle: "Signup",
       isAuthenticated: false,
       errorMessage: errors.array()[0].msg,
+      oldInput: { email, password, confirmPassword },
+      validationErrors: errors.array(),
     });
   }
   // checking  for existence of email in route check
