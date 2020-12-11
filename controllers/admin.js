@@ -1,4 +1,6 @@
 /* eslint-disable no-unused-vars */
+const { validationResult } = require("express-validator/check");
+
 const Product = require("../models/product");
 
 exports.getAddProduct = (req, res, next) => {
@@ -6,6 +8,9 @@ exports.getAddProduct = (req, res, next) => {
     pageTitle: "Add Product",
     path: "/admin/add-product",
     editing: false,
+    hasError: false,
+    errorMessage: null,
+    validationErrors: [],
   });
 };
 
@@ -14,23 +19,42 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/edit-product",
+      editing: false,
+      hasError: true,
+      product: {
+        title: title,
+        imageUrl: imageUrl,
+        price: price,
+        description: description,
+      },
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array(),
+    });
+  }
+
   const product = new Product({
-    title,
-    imageUrl,
-    price,
-    description,
-    //we dont need to put user_id, moongose does it for us?
+    title: title,
+    price: price,
+    description: description,
+    imageUrl: imageUrl,
     userId: req.user,
   });
-
   product
     .save()
     .then((result) => {
-      console.log("created product");
+      // console.log(result);
+      console.log("Created Product");
       res.redirect("/admin/products");
     })
-    .catch((error) => {
-      console.log(error);
+    .catch((err) => {
+      console.log(err);
     });
 };
 
@@ -40,7 +64,6 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
   const prodId = req.params.productId;
-  // Product.findByPk(prodId)
   Product.findById(prodId)
     .then((product) => {
       if (!product) {
@@ -51,9 +74,12 @@ exports.getEditProduct = (req, res, next) => {
         path: "/admin/edit-product",
         editing: editMode,
         product: product,
+        hasError: false,
+        errorMessage: null,
+        validationErrors: [],
       });
     })
-    .catch((err) => console.error(err));
+    .catch((err) => console.log(err));
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -62,56 +88,65 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Edit Product",
+      path: "/admin/edit-product",
+      editing: true,
+      hasError: true,
+      product: {
+        title: updatedTitle,
+        imageUrl: updatedImageUrl,
+        price: updatedPrice,
+        description: updatedDesc,
+        _id: prodId,
+      },
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array(),
+    });
+  }
+
   Product.findById(prodId)
     .then((product) => {
-      // ad a security check here
-      // TODO: check if this conversion is still necessary, and even the underscore _id syntax?
-      console.log(req.user.id);
-      console.log(req.user._id);
       if (product.userId.toString() !== req.user._id.toString()) {
         return res.redirect("/");
       }
       product.title = updatedTitle;
       product.price = updatedPrice;
-      product.imageUrl = updatedImageUrl;
       product.description = updatedDesc;
-      // again an example were we have to nest the promise otherways we
-      // would make it into this even though we return in the check above
+      product.imageUrl = updatedImageUrl;
       return product.save().then((result) => {
-        console.log("updated");
+        console.log("UPDATED PRODUCT!");
         res.redirect("/admin/products");
       });
-      // a catch will not be bubbled up
     })
-    .catch((err) => console.error(err));
+    .catch((err) => console.log(err));
 };
 
 exports.getProducts = (req, res, next) => {
-  //what does this method return if the user is not defined? => null
-  //only show books of that user
   Product.find({ userId: req.user._id })
-    // special mongoose methods for querying data
+    // .select('title price -_id')
+    // .populate('userId', 'name')
     .then((products) => {
-      //console.log(products);
+      console.log(products);
       res.render("admin/products", {
         prods: products,
         pageTitle: "Admin Products",
         path: "/admin/products",
       });
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => console.log(err));
 };
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  // Product.findByIdAndRemove(prodId)
-  // now other users cannot delete all books anymore
-  Product.deleteOne({ _id: prodId, userId: req.user.id })
+  Product.deleteOne({ _id: prodId, userId: req.user._id })
     .then(() => {
-      //console.log("deleted");
+      console.log("DESTROYED PRODUCT");
       res.redirect("/admin/products");
     })
-    .catch((err) => console.error(err));
+    .catch((err) => console.log(err));
 };
